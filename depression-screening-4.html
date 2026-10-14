@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sàng Lọc Trầm Cảm Chuyên Sâu</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0D0F14;
+  --surface: #13161E;
+  --card: #191C27;
+  --border: rgba(255,255,255,0.07);
+  --border-h: rgba(255,255,255,0.14);
+  --indigo: #6C7FFF;
+  --indigo-dim: rgba(108,127,255,0.12);
+  --lavender: #A78BFA;
+  --sky: #38BDF8;
+  --rose: #FB7185;
+  --amber: #FBBF24;
+  --green: #34D399;
+  --text: #E4E6F0;
+  --muted: #7880A0;
+  --soft: #B0B6D0;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Nunito',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 55% 40% at 5% 5%,rgba(108,127,255,0.09) 0%,transparent 60%),
+    radial-gradient(ellipse 45% 55% at 95% 95%,rgba(167,139,250,0.08) 0%,transparent 60%),
+    radial-gradient(ellipse 35% 35% at 50% 50%,rgba(56,189,248,0.04) 0%,transparent 70%);
+  pointer-events:none;
+}
+.wrap{
+  position:relative;z-index:1;
+  max-width:700px;margin:0 auto;
+  padding:44px 22px 100px;
+}
+
+/* HEADER */
+.hd{text-align:center;margin-bottom:44px;animation:up .8s ease both}
+.badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--indigo-dim);
+  border:1px solid rgba(108,127,255,0.3);
+  color:var(--indigo);
+  font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
+  padding:7px 18px;border-radius:50px;margin-bottom:20px;
+}
+h1{
+  font-family:'Lora',serif;
+  font-size:clamp(30px,5.5vw,50px);
+  font-weight:500;line-height:1.2;
+  margin-bottom:14px;
+  color:#fff;
+}
+h1 em{font-style:italic;color:var(--lavender)}
+.sub{font-size:14px;color:var(--muted);line-height:1.85;max-width:480px;margin:0 auto;font-weight:400}
+
+/* PROGRESS */
+.prog{margin-bottom:28px;animation:up .5s ease both .25s}
+.prog-top{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:9px}
+.track{height:4px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden}
+.fill{
+  height:100%;border-radius:4px;
+  background:linear-gradient(90deg,var(--indigo),var(--lavender));
+  box-shadow:0 0 12px rgba(108,127,255,0.5);
+  transition:width .55s cubic-bezier(.4,0,.2,1);
+}
+
+/* SECTION HEADER */
+.sec{
+  display:flex;align-items:center;gap:10px;
+  font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--indigo);margin-bottom:10px;
+}
+.sec::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(108,127,255,0.3),transparent)}
+
+/* CARD */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px;padding:34px 30px;
+  box-shadow:0 8px 48px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.05);
+  animation:slideIn .42s cubic-bezier(.4,0,.2,1) both;
+}
+@keyframes slideIn{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+.qnum{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.qtext{
+  font-family:'Lora',serif;
+  font-size:clamp(18px,3.2vw,22px);
+  font-weight:400;line-height:1.55;
+  color:#fff;margin-bottom:8px;
+}
+.qhint{font-size:13px;color:var(--muted);font-style:italic;margin-bottom:22px;line-height:1.6}
+.qsource{font-size:11px;color:rgba(108,127,255,0.6);margin-bottom:22px;font-weight:600;letter-spacing:.5px}
+
+/* FREQUENCY OPTIONS - PHQ style */
+.opts-phq{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
+  margin-bottom:4px;
+}
+.opt-phq{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:14px 8px;
+  background:rgba(255,255,255,0.03);
+  border:1.5px solid rgba(255,255,255,0.07);
+  border-radius:14px;cursor:pointer;
+  transition:all .2s ease;
+  font-family:'Nunito',sans-serif;
+}
+.opt-phq:hover{background:var(--indigo-dim);border-color:rgba(108,127,255,0.35);transform:translateY(-2px)}
+.opt-phq.sel{background:rgba(108,127,255,0.15);border-color:var(--indigo)}
+.opt-phq .day-num{
+  font-size:22px;font-weight:700;
+  color:var(--muted);line-height:1;
+}
+.opt-phq.sel .day-num{color:var(--indigo)}
+.opt-phq .day-lbl{font-size:11px;color:var(--muted);text-align:center;line-height:1.3;font-weight:500}
+.opt-phq.sel .day-lbl{color:var(--soft)}
+
+/* STANDARD OPTIONS */
+.opts-std{display:flex;flex-direction:column;gap:9px}
+.opt-std{
+  display:flex;align-items:center;gap:14px;
+  padding:13px 16px;
+  background:rgba(255,255,255,0.03);
+  border:1.5px solid rgba(255,255,255,0.07);
+  border-radius:12px;cursor:pointer;
+  transition:all .2s;
+  font-family:'Nunito',sans-serif;
+  font-size:14px;color:var(--text);text-align:left;
+}
+.opt-std:hover{background:var(--indigo-dim);border-color:rgba(108,127,255,0.3);transform:translateX(4px)}
+.opt-std.sel{background:rgba(108,127,255,0.12);border-color:var(--indigo)}
+.radio{
+  width:20px;height:20px;flex-shrink:0;
+  border-radius:50%;border:1.5px solid rgba(255,255,255,0.2);
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.opt-std.sel .radio{background:var(--indigo);border-color:var(--indigo)}
+.opt-std.sel .radio::after{content:'';width:8px;height:8px;border-radius:50%;background:#fff}
+
+/* CRITICAL WARNING */
+.critical-badge{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(251,113,133,0.08);
+  border:1px solid rgba(251,113,133,0.2);
+  border-radius:10px;padding:10px 14px;
+  font-size:12.5px;color:#FDA4AF;margin-bottom:16px;line-height:1.5;
+}
+
+/* NAV */
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:26px;gap:12px}
+.btn{padding:12px 28px;border-radius:50px;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-size:14px;font-weight:600;transition:all .2s}
+.btn-g{background:transparent;border:1.5px solid rgba(255,255,255,0.1);color:var(--muted)}
+.btn-g:hover:not(:disabled){border-color:rgba(255,255,255,0.25);color:var(--text)}
+.btn-g:disabled{opacity:.3;cursor:not-allowed}
+.btn-p{
+  background:linear-gradient(135deg,var(--indigo),var(--lavender));
+  color:#fff;box-shadow:0 4px 20px rgba(108,127,255,0.35);
+}
+.btn-p:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 28px rgba(108,127,255,0.5)}
+.btn-p:disabled{background:rgba(255,255,255,0.08);color:var(--muted);box-shadow:none;cursor:not-allowed}
+
+/* INTRO */
+.intro-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:22px;padding:44px 38px;
+  box-shadow:0 8px 60px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.05);
+  animation:up .7s ease both;
+  text-align:center;
+}
+.intro-icon{
+  width:76px;height:76px;border-radius:50%;margin:0 auto 26px;
+  background:linear-gradient(135deg,rgba(108,127,255,0.2),rgba(167,139,250,0.15));
+  border:1px solid rgba(108,127,255,0.2);
+  display:flex;align-items:center;justify-content:center;font-size:34px;
+}
+.intro-card h2{font-family:'Lora',serif;font-size:26px;font-weight:500;color:#fff;margin-bottom:14px}
+.intro-card p{font-size:14px;color:var(--muted);line-height:1.9;margin-bottom:12px;max-width:480px;margin-left:auto;margin-right:auto}
+
+.scales-info{
+  display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:20px 0;
+}
+.scale-chip{
+  padding:6px 14px;border-radius:50px;
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+  font-size:12px;color:var(--soft);font-weight:500;
+}
+
+.warn{
+  background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.2);
+  border-radius:12px;padding:14px 18px;
+  font-size:12.5px;color:#D4A017;line-height:1.85;
+  margin:20px 0 28px;text-align:left;
+}
+.btn-start{
+  display:block;width:100%;padding:16px;border:none;border-radius:14px;
+  background:linear-gradient(135deg,var(--indigo),var(--lavender));
+  color:#fff;font-family:'Nunito',sans-serif;font-size:16px;font-weight:700;
+  cursor:pointer;transition:all .25s;letter-spacing:.3px;
+  box-shadow:0 6px 24px rgba(108,127,255,0.4);
+}
+.btn-start:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(108,127,255,0.55)}
+
+/* RESULT */
+.res-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:22px;padding:40px 34px;
+  box-shadow:0 8px 60px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.05);
+  animation:up .7s ease both;
+}
+.res-score-block{text-align:center;margin-bottom:28px}
+.score-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:100px;height:100px;border-radius:50%;
+  font-family:'Lora',serif;font-size:36px;font-weight:600;
+  margin-bottom:14px;
+  border:3px solid;
+}
+.res-tag{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:8px}
+.res-title{font-family:'Lora',serif;font-size:28px;font-weight:500;color:#fff;margin-bottom:6px}
+.res-desc{font-size:13.5px;color:var(--muted);line-height:1.7;max-width:500px;margin:0 auto}
+
+/* sub-scale bars */
+.subscales{margin:28px 0}
+.subscales h3{font-family:'Lora',serif;font-size:18px;font-weight:500;color:#fff;margin-bottom:18px}
+.ssrow{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.ssname{font-size:13px;color:var(--soft);width:160px;flex-shrink:0;line-height:1.4}
+.sstrack{flex:1;height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden}
+.ssfill{height:100%;border-radius:4px;transition:width 1s cubic-bezier(.4,0,.2,1) var(--d,0s)}
+.sslabel{font-size:12px;width:90px;text-align:right;flex-shrink:0;font-weight:600}
+
+.divider{height:1px;background:rgba(255,255,255,0.06);margin:24px 0}
+
+.advice-block h3{font-family:'Lora',serif;font-size:22px;font-weight:500;color:#fff;margin-bottom:16px}
+.advice-text{font-size:14.5px;line-height:2.05;color:var(--soft);white-space:pre-line;min-height:100px}
+.dots{display:flex;align-items:center;gap:8px;padding:14px 0}
+.dots span{width:10px;height:10px;border-radius:50%;background:var(--indigo);animation:pulse 1.3s infinite}
+.dots span:nth-child(2){animation-delay:.2s}
+.dots span:nth-child(3){animation-delay:.4s}
+.dots p{font-size:13px;color:var(--muted);font-style:italic;margin-left:2px}
+@keyframes pulse{0%,100%{transform:scale(.55);opacity:.25}50%{transform:scale(1.1);opacity:1}}
+
+/* severity boxes */
+.sev-box{border-radius:14px;padding:18px 20px;margin-top:20px;font-size:13.5px;line-height:1.85}
+.sev-box strong{display:block;font-size:14.5px;margin-bottom:6px}
+.sev-min{background:rgba(52,211,153,0.07);border:1px solid rgba(52,211,153,0.2);color:#86EFAC}
+.sev-min strong{color:var(--green)}
+.sev-mild{background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.2);color:#FDE68A}
+.sev-mild strong{color:var(--amber)}
+.sev-mod{background:rgba(251,146,60,0.07);border:1px solid rgba(251,146,60,0.2);color:#FED7AA}
+.sev-mod strong{color:#FB923C}
+.sev-sev{background:rgba(251,113,133,0.08);border:1px solid rgba(251,113,133,0.25);color:#FECDD3}
+.sev-sev strong{color:var(--rose)}
+
+.crisis-box{
+  background:rgba(251,113,133,0.1);border:1px solid rgba(251,113,133,0.3);
+  border-radius:14px;padding:20px 22px;margin-top:16px;
+  font-size:13.5px;color:#FECDD3;line-height:1.9;
+}
+.crisis-box strong{display:block;font-size:15px;color:var(--rose);margin-bottom:6px}
+
+.btn-restart{
+  display:block;width:100%;margin-top:26px;padding:13px;
+  border:1.5px solid rgba(255,255,255,0.09);border-radius:12px;
+  background:transparent;color:var(--muted);
+  font-family:'Nunito',sans-serif;font-size:14px;font-weight:600;
+  cursor:pointer;transition:all .2s;
+}
+.btn-restart:hover{border-color:rgba(255,255,255,0.2);color:var(--text)}
+
+@keyframes up{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hd">
+    <div class="badge">🩺 Sàng lọc lâm sàng</div>
+    <h1>Kiểm tra <em>trầm cảm</em><br>chuyên sâu</h1>
+    <p class="sub">Dựa trên PHQ-9 · BDI-II · Hamilton Depression Rating Scale — các thang đo chuẩn quốc tế trong tâm thần học</p>
+    <p style="margin-top:10px;font-size:13px;color:var(--indigo);letter-spacing:.5px;font-weight:500;">by: Nguyen Hoang Long</p>
+  </header>
+  <div id="app"></div>
+</div>
+
+<script>
+/* ── Questions ─────────────────────────────────────────────────── */
+// type: phq4 = 4 cols (0-3 days), std4 = 4 options text, yn = yes/no, ynscore = yes scored
+const QS = [
+
+  /* ─ NHÓM 1: TRIỆU CHỨNG CỐT LÕI PHQ-9 (9 câu) ─ */
+  {
+    group:'Triệu chứng cốt lõi', groupN:1,
+    source:'PHQ-9 Câu 1',
+    type:'phq4',
+    text:'Trong 2 tuần qua, bạn có cảm thấy tâm trạng chán nản, buồn bã, hoặc tuyệt vọng không?',
+    hint:'Đây là triệu chứng trung tâm nhất của trầm cảm',
+    sub:'mood', critical:false
+  },
+  {
+    group:'Triệu chứng cốt lõi', groupN:1,
+    source:'PHQ-9 Câu 2',
+    type:'phq4',
+    text:'Bạn có mất hứng thú hoặc niềm vui với hầu hết các hoạt động — kể cả những thứ trước đây bạn rất thích?',
+    hint:'Mất hứng thú (anhedonia) là triệu chứng đặc trưng thứ 2',
+    sub:'anhedonia', critical:false
+  },
+  {
+    group:'Triệu chứng cốt lõi', groupN:1,
+    source:'PHQ-9 Câu 3',
+    type:'phq4',
+    text:'Bạn có gặp vấn đề với giấc ngủ — khó ngủ, ngủ không yên giấc, hoặc ngủ quá nhiều?',
+    hint:'',
+    sub:'sleep', critical:false
+  },
+  {
+    group:'Triệu chứng cốt lõi', groupN:1,
+    source:'PHQ-9 Câu 4',
+    type:'phq4',
+    text:'Bạn có cảm thấy mệt mỏi, thiếu năng lượng dù không làm gì nhiều?',
+    hint:'',
+    sub:'energy', critical:false
+  },
+  {
+    group:'Triệu chứng cốt lõi', groupN:1,
+    source:'PHQ-9 Câu 5',
+    type:'phq4',
+    text:'Bạn có thay đổi về ăn uống đáng kể — ăn ít đi nhiều hoặc ăn quá nhiều?',
+    hint:'Mất cảm giác ngon miệng hoặc ngược lại thèm ăn',
+    sub:'appetite', critical:false
+  },
+  {
+    group:'Triệu chứng cốt lõi', groupN:1,
+    source:'PHQ-9 Câu 6',
+    type:'phq4',
+    text:'Bạn có cảm giác tồi tệ về bản thân — thấy mình là kẻ thất bại, đã làm người thân thất vọng?',
+    hint:'',
+    sub:'selfworth', critical:false
+  },
+  {
+    group:'Triệu chứng cốt lõi', groupN:1,
+    source:'PHQ-9 Câu 7',
+    type:'phq4',
+    text:'Bạn có khó tập trung vào việc gì đó — đọc sách, làm việc, xem phim?',
+    hint:'',
+    sub:'concentration', critical:false
+  },
+  {
+    group:'Triệu chứng cốt lõi', groupN:1,
+    source:'PHQ-9 Câu 8',
+    type:'phq4',
+    text:'Bạn có thấy mình chuyển động hay nói chậm lại đến mức người khác chú ý — hoặc ngược lại bồn chồn, không ngồi yên được?',
+    hint:'Thay đổi vận động tâm thần',
+    sub:'psychomotor', critical:false
+  },
+  {
+    group:'Triệu chứng cốt lõi', groupN:1,
+    source:'PHQ-9 Câu 9 ⚠️',
+    type:'phq4',
+    text:'Bạn có suy nghĩ rằng mình thà chết còn hơn, hoặc có ý nghĩ tự làm hại bản thân?',
+    hint:'Câu hỏi quan trọng — hãy trả lời thành thật. Không có phán xét nào ở đây',
+    sub:'si', critical:true
+  },
+
+  /* ─ NHÓM 2: THANG BDI-II — NHẬN THỨC & CẢM XÚC (8 câu) ─ */
+  {
+    group:'Nhận thức & Cảm xúc', groupN:2,
+    source:'BDI-II · Nhận thức',
+    type:'std4',
+    text:'Về tương lai, bạn cảm thấy như thế nào?',
+    hint:'',
+    opts:['Tôi không bi quan về tương lai','Tôi bi quan hơn bình thường','Tôi không kỳ vọng gì tốt đẹp sẽ xảy ra','Tôi cảm thấy tương lai hoàn toàn vô vọng'],
+    sub:'hopeless'
+  },
+  {
+    group:'Nhận thức & Cảm xúc', groupN:2,
+    source:'BDI-II · Nhận thức',
+    type:'std4',
+    text:'Khi nhìn lại bản thân, bạn nghĩ gì?',
+    hint:'',
+    opts:['Tôi không thấy mình thất bại','Tôi đã thất bại nhiều hơn những người khác','Khi nhìn lại, tôi thấy mình toàn thất bại','Tôi là người hoàn toàn thất bại'],
+    sub:'selfworth'
+  },
+  {
+    group:'Nhận thức & Cảm xúc', groupN:2,
+    source:'BDI-II · Cảm xúc',
+    type:'std4',
+    text:'Bạn có cảm thấy tội lỗi không?',
+    hint:'',
+    opts:['Không đặc biệt','Tôi cảm thấy tội lỗi về nhiều thứ','Hầu hết thời gian tôi cảm thấy rất tội lỗi','Tôi luôn cảm thấy tội lỗi'],
+    sub:'guilt'
+  },
+  {
+    group:'Nhận thức & Cảm xúc', groupN:2,
+    source:'BDI-II · Nhận thức',
+    type:'std4',
+    text:'Khi khóc hoặc muốn khóc, bạn nhận thấy gì?',
+    hint:'',
+    opts:['Tôi khóc không khác bình thường','Tôi khóc nhiều hơn trước đây','Tôi khóc vì hầu hết mọi thứ nhỏ nhặt','Tôi muốn khóc nhưng không thể khóc được nữa'],
+    sub:'mood'
+  },
+  {
+    group:'Nhận thức & Cảm xúc', groupN:2,
+    source:'BDI-II · Hành vi',
+    type:'std4',
+    text:'Khả năng ra quyết định của bạn như thế nào?',
+    hint:'',
+    opts:['Tôi quyết định tốt như trước','Tôi trì hoãn quyết định hơn trước','Tôi rất khó khăn khi phải quyết định','Tôi không thể quyết định bất cứ điều gì'],
+    sub:'concentration'
+  },
+  {
+    group:'Nhận thức & Cảm xúc', groupN:2,
+    source:'BDI-II · Cơ thể',
+    type:'std4',
+    text:'Nhìn vào gương, bạn cảm thấy thế nào về ngoại hình của mình?',
+    hint:'',
+    opts:['Tôi không thấy xấu hơn trước','Tôi lo lắng rằng mình trông già đi hay kém hấp dẫn','Tôi cảm thấy có sự thay đổi làm mình trở nên kém hấp dẫn','Tôi tin rằng mình trông thật xấu xí'],
+    sub:'selfworth'
+  },
+  {
+    group:'Nhận thức & Cảm xúc', groupN:2,
+    source:'BDI-II · Hành vi',
+    type:'std4',
+    text:'Bạn có thể làm việc như trước không?',
+    hint:'Bao gồm cả công việc và các hoạt động thường ngày',
+    opts:['Tôi làm việc được như trước','Tôi cần cố gắng nhiều hơn để bắt đầu làm gì đó','Tôi phải ép bản thân rất nhiều để làm bất cứ điều gì','Tôi không thể làm bất kỳ việc gì cả'],
+    sub:'energy'
+  },
+  {
+    group:'Nhận thức & Cảm xúc', groupN:2,
+    source:'BDI-II · Xã hội',
+    type:'std4',
+    text:'Gần đây bạn có muốn gặp gỡ hay ở cạnh người khác không?',
+    hint:'',
+    opts:['Tôi không thay đổi trong việc muốn gặp người khác','Tôi ít muốn gặp người khác hơn','Tôi mất hầu hết hứng thú và cảm tình với người khác','Tôi mất hoàn toàn hứng thú với người khác'],
+    sub:'social'
+  },
+
+  /* ─ NHÓM 3: TRIỆU CHỨNG THỂ CHẤT (5 câu) ─ */
+  {
+    group:'Triệu chứng thể chất', groupN:3,
+    source:'Hamilton · Somatic',
+    type:'std4',
+    text:'Cơ thể bạn có biểu hiện đau đầu, đau ngực, đau dạ dày hoặc đau mơ hồ không rõ nguyên nhân không?',
+    hint:'Trầm cảm thường biểu hiện qua cơ thể',
+    opts:['Không','Đôi khi nhẹ','Thường xuyên, khó chịu','Gần như hàng ngày, rất khó chịu'],
+    sub:'somatic'
+  },
+  {
+    group:'Triệu chứng thể chất', groupN:3,
+    source:'Hamilton · Somatic',
+    type:'std4',
+    text:'Ham muốn tình dục của bạn thay đổi như thế nào?',
+    hint:'',
+    opts:['Không thay đổi','Giảm nhẹ','Giảm đáng kể','Gần như không còn'],
+    sub:'somatic'
+  },
+  {
+    group:'Triệu chứng thể chất', groupN:3,
+    source:'MADRS · Somatic',
+    type:'std4',
+    text:'Bạn có cảm thấy nặng nề, như thể cơ thể bị kéo xuống không?',
+    hint:'',
+    opts:['Không','Đôi khi thoáng qua','Khá thường xuyên','Hầu như suốt ngày'],
+    sub:'somatic'
+  },
+  {
+    group:'Triệu chứng thể chất', groupN:3,
+    source:'Hamilton · Anxiety somatic',
+    type:'std4',
+    text:'Bạn có hay bị tim đập nhanh, đổ mồ hôi, run tay hoặc khó thở không khi không vận động?',
+    hint:'Các triệu chứng lo âu thể chất thường đi kèm trầm cảm',
+    opts:['Không','Thỉnh thoảng nhẹ','Thường xuyên','Gần như liên tục'],
+    sub:'anxiety_somatic'
+  },
+  {
+    group:'Triệu chứng thể chất', groupN:3,
+    source:'Hamilton · Diurnal',
+    type:'std4',
+    text:'Tâm trạng của bạn thường tệ hơn vào thời điểm nào?',
+    hint:'Trầm cảm nội sinh thường tệ nhất vào buổi sáng',
+    opts:['Không có sự khác biệt rõ ràng','Buổi chiều/tối tệ hơn','Buổi sáng tệ hơn','Buổi sáng rất tệ — khó ra khỏi giường'],
+    sub:'diurnal'
+  },
+
+  /* ─ NHÓM 4: TÁC ĐỘNG CHỨC NĂNG (4 câu) ─ */
+  {
+    group:'Tác động cuộc sống', groupN:4,
+    source:'PHQ-9 Câu 10 · Chức năng',
+    type:'std4',
+    text:'Các vấn đề trên ảnh hưởng thế nào đến công việc, chăm sóc gia đình, hoặc các mối quan hệ?',
+    hint:'',
+    opts:['Không khó khăn chút nào','Hơi khó khăn','Khá khó khăn','Cực kỳ khó khăn'],
+    sub:'function'
+  },
+  {
+    group:'Tác động cuộc sống', groupN:4,
+    source:'GAD + Depression overlap',
+    type:'std4',
+    text:'Bạn có thể tận hưởng những khoảnh khắc vui vẻ, hài hước, hay thư giãn không?',
+    hint:'',
+    opts:['Như bình thường','Ít hơn một chút','Rất khó — cảm giác vui chóng tàn','Tôi gần như không cảm nhận được niềm vui'],
+    sub:'anhedonia'
+  },
+  {
+    group:'Tác động cuộc sống', groupN:4,
+    source:'Clinical duration',
+    type:'std4',
+    text:'Những cảm giác này đã kéo dài bao lâu?',
+    hint:'',
+    opts:['Dưới 1 tuần','1–2 tuần','2 tuần đến 1 tháng','Hơn 1 tháng'],
+    sub:'duration'
+  },
+  {
+    group:'Tác động cuộc sống', groupN:4,
+    source:'Clinical history',
+    type:'std4',
+    text:'Trước đây bạn có từng trải qua giai đoạn tương tự kéo dài không?',
+    hint:'',
+    opts:['Không, lần đầu tiên','Có một lần trước đây','Có 2–3 lần','Có nhiều lần, lặp lại theo chu kỳ'],
+    sub:'history'
+  },
+];
+
+const PHQ_LABELS = [
+  {d:'0', l:'Không\ncó'},
+  {d:'1–3', l:'Vài\nngày'},
+  {d:'4–6', l:'Nhiều\nhơn nửa'},
+  {d:'7', l:'Hầu như\nmỗi ngày'},
+];
+
+const SUB_META = {
+  mood:       {label:'Tâm trạng trầm',       color:'#A78BFA'},
+  anhedonia:  {label:'Mất niềm vui',          color:'#60A5FA'},
+  sleep:      {label:'Giấc ngủ',              color:'#34D399'},
+  energy:     {label:'Năng lượng',            color:'#4ECDC4'},
+  appetite:   {label:'Ăn uống',              color:'#FBBF24'},
+  selfworth:  {label:'Tự đánh giá',          color:'#F472B6'},
+  concentration:{label:'Tập trung',          color:'#818CF8'},
+  psychomotor:{label:'Vận động tâm thần',    color:'#94A3B8'},
+  si:         {label:'Suy nghĩ tự hại',      color:'#FB7185'},
+  hopeless:   {label:'Vô vọng',              color:'#C084FC'},
+  guilt:      {label:'Tội lỗi',              color:'#F9A8D4'},
+  somatic:    {label:'Thể chất',             color:'#6EE7B7'},
+  anxiety_somatic:{label:'Lo âu thể chất',   color:'#FCD34D'},
+  function:   {label:'Chức năng sống',       color:'#38BDF8'},
+};
+
+/* ── State ── */
+let screen='intro', cur=0, ans=new Array(QS.length).fill(undefined);
+
+/* ── Render ── */
+function render(){
+  const app=document.getElementById('app');
+  if(screen==='intro') app.innerHTML=introHTML();
+  else if(screen==='quiz'){app.innerHTML=quizHTML();attachQ();}
+  else if(screen==='result'){app.innerHTML=resultHTML();afterResult();}
+}
+
+/* ── INTRO ── */
+function introHTML(){
+  return`<div class="intro-card">
+    <div class="intro-icon">🩺</div>
+    <h2>Sàng lọc trầm cảm lâm sàng</h2>
+    <p>Bộ <strong style="color:#fff">28 câu hỏi</strong> được xây dựng từ 4 thang đo chuẩn quốc tế:</p>
+    <div class="scales-info">
+      <span class="scale-chip">PHQ-9</span>
+      <span class="scale-chip">BDI-II (Beck)</span>
+      <span class="scale-chip">Hamilton Depression</span>
+      <span class="scale-chip">MADRS</span>
+    </div>
+    <p>Bao gồm 4 nhóm triệu chứng: triệu chứng cốt lõi, nhận thức &amp; cảm xúc, thể chất, và tác động cuộc sống. Sau khi hoàn thành, tôi sẽ phân tích chi tiết và đưa ra định hướng cụ thể cho bạn.</p>
+    <div class="warn">
+      ⚠️ <strong>Quan trọng:</strong> Bộ câu hỏi này là công cụ <strong>sàng lọc lâm sàng</strong> — có độ chính xác cao hơn các bài test thông thường — nhưng vẫn KHÔNG thay thế được chẩn đoán từ bác sĩ tâm thần hoặc chuyên gia tâm lý lâm sàng. Nếu bạn đang cảm thấy rất khó khăn, hãy tìm gặp chuyên gia tâm lý hoặc bác sĩ tâm thần sớm nhất có thể.
+    </div>
+    <button class="btn-start" onclick="start()">Bắt đầu đánh giá →</button>
+  </div>`;
+}
+
+/* ── QUIZ ── */
+function quizHTML(){
+  const q=QS[cur];
+  const s=ans[cur];
+  const pct=Math.round((cur/QS.length)*100);
+  const groups=['','Nhóm 1: Triệu chứng cốt lõi','Nhóm 2: Nhận thức & Cảm xúc','Nhóm 3: Thể chất','Nhóm 4: Chức năng sống'];
+
+  let optsHTML='';
+  if(q.type==='phq4'){
+    optsHTML=`<div class="opts-phq">${PHQ_LABELS.map((l,i)=>`
+      <button class="opt-phq ${s===i?'sel':''}" data-i="${i}">
+        <span class="day-num">${l.d}</span>
+        <span class="day-lbl">${l.l}</span>
+      </button>`).join('')}</div>`;
+  } else {
+    optsHTML=`<div class="opts-std">${q.opts.map((o,i)=>`
+      <button class="opt-std ${s===i?'sel':''}" data-i="${i}">
+        <span class="radio"></span><span>${o}</span>
+      </button>`).join('')}</div>`;
+  }
+
+  return`
+    <div class="prog">
+      <div class="prog-top"><span>${groups[q.groupN]} · Câu ${cur+1}/${QS.length}</span><span>${pct}%</span></div>
+      <div class="track"><div class="fill" style="width:${pct}%"></div></div>
+    </div>
+    <div class="sec">${q.group}</div>
+    <div class="card">
+      <div class="qnum">Câu ${cur+1} · ${q.source}</div>
+      ${q.critical?`<div class="critical-badge">🔴 Câu hỏi về an toàn — không có câu trả lời sai. Hãy trả lời thành thật nhất.</div>`:''}
+      <div class="qtext">${q.text}</div>
+      ${q.hint?`<div class="qhint">${q.hint}</div>`:''}
+      ${optsHTML}
+      <div class="nav">
+        <button class="btn btn-g" id="bp" ${cur===0?'disabled':''}>← Quay lại</button>
+        <button class="btn btn-p" id="bn" ${s===undefined?'disabled':''}>
+          ${cur===QS.length-1?'Xem kết quả ✓':'Tiếp theo →'}
+        </button>
+      </div>
+    </div>`;
+}
+
+function attachQ(){
+  document.querySelectorAll('[data-i]').forEach(btn=>{
+    btn.addEventListener('click',()=>{ans[cur]=parseInt(btn.dataset.i);render();});
+  });
+  document.getElementById('bp')?.addEventListener('click',()=>{if(cur>0){cur--;render();}});
+  document.getElementById('bn')?.addEventListener('click',()=>{
+    if(ans[cur]===undefined)return;
+    if(cur<QS.length-1){cur++;render();}else{screen='result';render();}
+  });
+}
+
+/* ── RESULT ── */
+function calcPHQ9(){
+  // PHQ-9 = first 9 questions, scored 0-3
+  return QS.slice(0,9).reduce((s,q,i)=>s+(ans[i]||0),0);
+}
+
+function resultHTML(){
+  const phq=calcPHQ9();
+  const siScore=ans[8]||0; // Q9 suicidal ideation
+
+  let level,color,emoji,sevClass,sevMsg;
+  if(phq<=4){
+    level='Không có / Tối thiểu';color='#34D399';emoji='🌿';sevClass='sev-min';
+    sevMsg='<strong>✅ Không có dấu hiệu trầm cảm đáng kể</strong>Điểm PHQ-9 của bạn ở mức tối thiểu. Bạn có thể đang trải qua một vài khó khăn bình thường trong cuộc sống. Hãy tiếp tục chú ý đến sức khoẻ tinh thần của mình.';
+  } else if(phq<=9){
+    level='Trầm cảm nhẹ';color='#FBBF24';emoji='🌤';sevClass='sev-mild';
+    sevMsg='<strong>⚠️ Dấu hiệu trầm cảm nhẹ</strong>Kết quả gợi ý có một số triệu chứng trầm cảm ở mức nhẹ. Tự chăm sóc, thay đổi lối sống, và theo dõi có thể giúp ích. Cân nhắc tham vấn chuyên gia nếu kéo dài hơn 2 tuần.';
+  } else if(phq<=14){
+    level='Trầm cảm vừa';color='#FB923C';emoji='🌧';sevClass='sev-mod';
+    sevMsg='<strong>🔶 Dấu hiệu trầm cảm vừa — Nên gặp chuyên gia</strong>Điểm số gợi ý trầm cảm ở mức vừa. Bạn nên đặt lịch gặp bác sĩ tâm thần hoặc chuyên gia tâm lý trong thời gian sớm. Trầm cảm vừa thường đáp ứng tốt với điều trị.';
+  } else if(phq<=19){
+    level='Trầm cảm nặng vừa';color='#FB7185';emoji='⛈';sevClass='sev-sev';
+    sevMsg='<strong>🔴 Trầm cảm nặng vừa — Cần gặp chuyên gia sớm</strong>Điểm số của bạn ở mức đáng lo ngại. Hãy đặt lịch gặp bác sĩ tâm thần hoặc đến bệnh viện trong tuần này. Với sự hỗ trợ đúng đắn, trầm cảm hoàn toàn có thể điều trị được.';
+  } else {
+    level='Trầm cảm nặng';color='#F43F5E';emoji='🆘';sevClass='sev-sev';
+    sevMsg='<strong>🆘 Trầm cảm nặng — Cần hỗ trợ ngay hôm nay</strong>Điểm số cho thấy dấu hiệu trầm cảm nặng. Vui lòng liên hệ bác sĩ tâm thần hoặc đến cơ sở y tế ngay hôm nay. Bạn xứng đáng được nhận giúp đỡ.';
+  }
+
+  // sub-score bars
+  const subScores={};
+  QS.forEach((q,i)=>{
+    if(!subScores[q.sub]) subScores[q.sub]={score:0,max:0};
+    subScores[q.sub].score+=(ans[i]||0);
+    subScores[q.sub].max+=3;
+  });
+
+  const mainSubs=['mood','anhedonia','sleep','energy','selfworth','concentration','hopeless','somatic','function'];
+  const barRows=mainSubs.filter(k=>subScores[k]).map((k,idx)=>{
+    const m=SUB_META[k]||{label:k,color:'#888'};
+    const pct=Math.round((subScores[k].score/subScores[k].max)*100);
+    return`<div class="ssrow">
+      <div class="ssname">${m.label}</div>
+      <div class="sstrack"><div class="ssfill" style="width:0%;background:${m.color};--d:${idx*0.1}s" data-w="${pct}"></div></div>
+      <div class="sslabel" style="color:${m.color}">${pct}%</div>
+    </div>`;
+  }).join('');
+
+  return`<div class="res-card">
+    <div class="res-score-block">
+      <div class="score-badge" style="color:${color};border-color:${color};background:${color}18">${phq}</div>
+      <div class="res-tag" style="color:${color}">${emoji} PHQ-9: ${phq}/27</div>
+      <div class="res-title">${level}</div>
+      <div class="res-desc">Dựa trên thang PHQ-9 chuẩn quốc tế (ngưỡng: 0–4 tối thiểu · 5–9 nhẹ · 10–14 vừa · 15–19 nặng vừa · 20–27 nặng)</div>
+    </div>
+
+    <div class="subscales">
+      <h3>Chi tiết theo từng triệu chứng</h3>
+      ${barRows}
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="advice-block">
+      <h3>✦ Phân tích & Định hướng cá nhân</h3>
+      <div class="advice-text" id="adv">
+        <div class="dots"><span></span><span></span><span></span><p>Đang phân tích kết quả của bạn…</p></div>
+      </div>
+    </div>
+
+    <div class="${sevClass} sev-box">${sevMsg}</div>
+
+    ${siScore>=2?`<div class="crisis-box">
+      <strong>🆘 Cần hỗ trợ ngay lập tức</strong>
+      Bạn cho biết có suy nghĩ về việc tự làm hại bản thân. Điều này rất quan trọng.<br>
+      Không ai có thể tự cứu được bạn ngoại trừ chính bạn. Trốn tránh nỗi đau không phải khiến nó mất đi — hãy đối diện và chấp nhận nó.
+    </div>`:''}
+
+    <button class="btn-restart" onclick="restart()">↺ Làm lại từ đầu</button>
+  </div>`;
+}
+
+async function afterResult(){
+  // animate bars
+  setTimeout(()=>{
+    document.querySelectorAll('.ssfill').forEach(el=>{
+      setTimeout(()=>{el.style.width=el.dataset.w+'%';},200);
+    });
+  },100);
+
+  const phq=calcPHQ9();
+  const siScore=ans[8]||0;
+
+  const subDetail=Object.entries(
+    QS.reduce((acc,q,i)=>{
+      if(!acc[q.sub])acc[q.sub]={score:0,max:0};
+      acc[q.sub].score+=(ans[i]||0);acc[q.sub].max+=3;return acc;
+    },{})
+  ).map(([k,v])=>`${(SUB_META[k]||{label:k}).label}: ${Math.round(v.score/v.max*100)}%`).join(', ');
+
+  let level;
+  if(phq<=4)level='không có/tối thiểu';else if(phq<=9)level='nhẹ';else if(phq<=14)level='vừa';else if(phq<=19)level='nặng vừa';else level='nặng';
+
+  const prompt=`Bạn là chuyên gia tâm lý lâm sàng người Việt, giàu kinh nghiệm, ấm áp và không phán xét.
+
+Người dùng vừa hoàn thành bài sàng lọc trầm cảm lâm sàng (PHQ-9 + BDI-II + Hamilton) với kết quả:
+- PHQ-9: ${phq}/27 → Mức độ: ${level}
+- Chi tiết triệu chứng: ${subDetail}
+${siScore>=1?`- ⚠️ Có đề cập đến suy nghĩ tự hại (mức ${siScore}/3)`:''}
+
+Hãy viết phân tích và định hướng bằng tiếng Việt, gồm các phần:
+
+1. Nhận xét về bức tranh lâm sàng (2-3 câu ấm áp, không phán xét): Mô tả những gì bạn đang trải qua dựa trên kết quả cụ thể — đặt tên cho những triệu chứng nổi bật nhất.
+
+2. Những triệu chứng cần chú ý nhất: Chọn 2-3 triệu chứng có điểm cao nhất, giải thích tại sao chúng liên kết với nhau và ảnh hưởng đến cuộc sống như thế nào.
+
+3. Bước tiếp theo phù hợp: Dựa trên mức độ, đưa ra lời khuyên rõ ràng — có nên gặp chuyên gia không, ở đâu, như thế nào. Tránh mơ hồ.
+
+4. 3 điều có thể làm ngay hôm nay: Kỹ thuật cụ thể, dễ thực hiện, phù hợp với mức độ hiện tại.
+
+5. Một câu kết ấm áp và thực tế (không sáo rỗng).
+
+${siScore>=1?'Lưu ý: Hãy nhắc nhẹ nhàng rằng việc có suy nghĩ tự hại là dấu hiệu cần được hỗ trợ chuyên nghiệp ngay, nhưng đừng làm người đọc hoảng loạn.':''}
+
+Viết tự nhiên hoàn toàn, không dùng Markdown, không dùng tiêu đề in đậm hay gạch chân, không bullets. Dùng emoji tự nhiên thưa thớt. Tổng 300-380 từ. Giọng điệu của người bạn thân hiểu tâm lý — không phải báo cáo y tế.`;
+
+  try{
+    const r=await fetch("https://api.anthropic.com/v1/messages",{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+    });
+    const d=await r.json();
+    const el=document.getElementById('adv');
+    if(el)el.innerHTML=d.content[0].text.replace(/\n/g,'<br>');
+  }catch(e){
+    const el=document.getElementById('adv');
+    if(el)el.textContent='Không thể tải phân tích. Vui lòng thử lại.';
+  }
+}
+
+function start(){screen='quiz';cur=0;render();}
+function restart(){screen='intro';cur=0;ans=new Array(QS.length).fill(undefined);render();}
+
+render();
+</script>
+</body>
+</html>
